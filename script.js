@@ -17,7 +17,7 @@ class Project {
     this.name = projectName;
   }
   getTodos = () => {
-    return [];
+    return this.todos;
   };
   addTodo = todo => {
     this.todos.push(todo);
@@ -55,6 +55,35 @@ then edit
 
 then switch projects
 then add todo can select project or add a new project
-
-
 */
+
+const toDoList = new ToDoList();
+const defaultProject = toDoList.getProjectByName('Default');
+defaultProject.addTodo(
+  new Todo('Get sleep', 'Lie in bed and count my breaths', '2023-11-12', false)
+);
+defaultProject.addTodo(
+  new Todo(
+    'Stretch',
+    'Lengthen my arms, neck, shoulders, forearms, chest, lats',
+    '2023-11-30',
+    true
+  )
+);
+console.log('🚀 ~ file: script.js:62 ~ defaultProject:', defaultProject);
+
+console.log('🚀 ~ file: script.js:61 ~ toDoList:', toDoList);
+
+const todosDiv = document.querySelector('.todos');
+const displayTodos = () => {
+  console.log(
+    '🚀 ~ file: script.js:81 ~ displayTodos ~ defaultProject:',
+    defaultProject
+  );
+
+  const todos = defaultProject.getTodos();
+  console.log('🚀 ~ file: script.js:79 ~ displayTodos ~ todos:', todos);
+  todosDiv.textContent = JSON.stringify(todos, null, 4);
+};
+
+displayTodos();

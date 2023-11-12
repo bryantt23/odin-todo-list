@@ -23,7 +23,7 @@ function testAddTodo() {
   const defaultProject = toDoList.getProjectByName('Default');
   const initialCount = defaultProject.todos.length;
   defaultProject.addTodo(
-    new Todo('New Todo', 'Description', '2023-11-08', true, false)
+    new Todo('New Todo', 'Description', '2023-11-08', true)
   );
   const todoAddedToDefaultProject = defaultProject.todos.some(
     todo => todo.title === 'New Todo'
