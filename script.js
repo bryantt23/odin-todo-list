@@ -22,8 +22,8 @@ class Project {
   addTodo = todo => {
     this.todos.push(todo);
   };
-  deleteTodo = todo => {
-    this.todos = this.todos.splice(this.todos.indexOf(todo, 1));
+  deleteTodo = pos => {
+    this.todos = this.todos.splice(pos, 1);
   };
   editTodo = (currentTodo, updatedTodo) => {
     const pos = this.todos.indexOf(currentTodo);
