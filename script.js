@@ -38,11 +38,23 @@ class Project {
 }
 
 class Todo {
-  constructor(title, description, dueDate, isUrgent, isComplete) {
+  constructor(title, description, dueDate, isComplete) {
     this.title = title;
     this.description = description;
     this.dueDate = dueDate;
-    this.isUrgent = isUrgent;
     this.isCompleted = isComplete;
   }
 }
+
+/*
+first show todos
+have ability to toggle
+then delete
+then create
+then edit
+
+then switch projects
+then add todo can select project or add a new project
+
+
+*/

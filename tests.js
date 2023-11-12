@@ -41,7 +41,7 @@ function testDeleteTodo() {
   const defaultProject = toDoList.getProjectByName('Default');
   const initialCount = defaultProject.todos.length;
   defaultProject.addTodo(
-    new Todo('Temp Todo', 'Description', '2023-11-08', true, false)
+    new Todo('Temp Todo', 'Description', '2023-11-08', true)
   );
   const addedTodoIndex = defaultProject.todos.length - 1;
   defaultProject.deleteTodo(addedTodoIndex);
@@ -54,7 +54,7 @@ function testDeleteTodo() {
 function testEditTodo() {
   const defaultProject = toDoList.getProjectByName('Default');
   defaultProject.addTodo(
-    new Todo('Edit Me', 'Initial Description', '2023-11-08', false, false)
+    new Todo('Edit Me', 'Initial Description', '2023-11-08', false)
   );
   const initialTodo = defaultProject.todos.find(
     todo => todo.title === 'Edit Me'
@@ -86,7 +86,7 @@ function testGetTodo() {
 function testToggleTodoIsComplete() {
   const defaultProject = toDoList.getProjectByName('Default');
   defaultProject.addTodo(
-    new Todo('Complete Me', 'Some Description', '2023-11-08', true, false)
+    new Todo('Complete Me', 'Some Description', '2023-11-08', true)
   );
   const todoToToggle = defaultProject.todos.find(
     todo => todo.title === 'Complete Me'
@@ -116,7 +116,7 @@ function testAddTodoToProject() {
   const newProject = toDoList.getProjectByName(projectName);
   const initialTodoCount = newProject.todos.length;
   newProject.addTodo(
-    new Todo('Todo for New Project', 'Description', '2023-11-08', false, false)
+    new Todo('Todo for New Project', 'Description', '2023-11-08', false)
   );
   const newTodoCount = newProject.todos.length;
   console.log(
