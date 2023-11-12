@@ -184,7 +184,7 @@ function runTests() {
   testGetTodo();
   testToggleTodoIsComplete();
   testAddProject();
-  // testAddTodoToProject();
+  testAddTodoToProject();
   console.log('Tests finished.');
 }
 
