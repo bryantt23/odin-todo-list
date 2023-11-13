@@ -75,15 +75,18 @@ console.log('🚀 ~ file: script.js:62 ~ defaultProject:', defaultProject);
 console.log('🚀 ~ file: script.js:61 ~ toDoList:', toDoList);
 
 const todosDiv = document.querySelector('.todos');
+const ul = document.querySelector('ul');
 const displayTodos = () => {
-  console.log(
-    '🚀 ~ file: script.js:81 ~ displayTodos ~ defaultProject:',
-    defaultProject
-  );
-
   const todos = defaultProject.getTodos();
-  console.log('🚀 ~ file: script.js:79 ~ displayTodos ~ todos:', todos);
-  todosDiv.textContent = JSON.stringify(todos, null, 4);
+  for (const todo of todos) {
+    const li = document.createElement('li');
+    li.textContent = todo.title;
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = todo.isCompleted;
+    li.appendChild(checkbox);
+    ul.appendChild(li);
+  }
 };
 
 displayTodos();
