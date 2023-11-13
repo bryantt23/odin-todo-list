@@ -19,8 +19,9 @@ class Project {
   getTodos = () => {
     return this.todos;
   };
-  addTodo = todo => {
-    this.todos.push(todo);
+  addTodo = (title, description, dueDate, isCompleted) => {
+    const newTodo = new Todo(title, description, dueDate, isCompleted);
+    this.todos.push(newTodo);
   };
   deleteTodo = pos => {
     this.todos.splice(pos, 1);
@@ -46,36 +47,26 @@ class Todo {
   }
 }
 
-/*
-first show todos
-have ability to toggle
-then delete
-then create
-then edit
-
-then switch projects
-then add todo can select project or add a new project
-*/
-
 const toDoList = new ToDoList();
 const defaultProject = toDoList.getProjectByName('Default');
 defaultProject.addTodo(
-  new Todo('Get sleep', 'Lie in bed and count my breaths', '2023-11-12', false)
+  'Get sleep',
+  'Lie in bed and count my breaths',
+  '2023-11-12',
+  false
 );
 defaultProject.addTodo(
-  new Todo(
-    'Stretch',
-    'Lengthen my arms, neck, shoulders, forearms, chest, lats',
-    '2023-11-30',
-    true
-  )
+  'Stretch',
+  'Lengthen my arms, neck, shoulders, forearms, chest, lats',
+  '2023-11-30',
+  true
 );
-console.log('🚀 ~ file: script.js:62 ~ defaultProject:', defaultProject);
-
-console.log('🚀 ~ file: script.js:61 ~ toDoList:', toDoList);
 
 const todosDiv = document.querySelector('.todos');
 const ul = document.querySelector('ul');
+const addTodoBtn = document.querySelector('.add-todo');
+const form = document.querySelector('form');
+
 const displayTodos = () => {
   ul.innerHTML = '';
   const todos = defaultProject.getTodos();
@@ -104,6 +95,32 @@ const displayTodos = () => {
   }
 };
 
+addTodoBtn.addEventListener('click', showAddTodoForm);
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  const title = formData.get('title');
+  const description = formData.get('description');
+  const dueDate = formData.get('dueDate');
+  const isCompleted = formData.has('isCompleted');
+
+  defaultProject.addTodo(title, description, dueDate, isCompleted);
+
+  hideAddTodoForm();
+  displayTodos();
+});
+
+function showAddTodoForm() {
+  form.style.visibility = 'visible';
+  todosDiv.style.display = 'none';
+}
+
+function hideAddTodoForm() {
+  form.style.visibility = 'hidden';
+  todosDiv.style.display = 'block';
+}
+
 // ul.addEventListener('click', e => {
 //   if (e.target.classList.contains('delete-btn')) {
 //     console.log(e);
@@ -112,3 +129,13 @@ const displayTodos = () => {
 // });
 
 displayTodos();
+
+/*
+first show todos x
+have ability to toggle x
+then delete x
+then create, edit, see details (using the form)
+
+then switch projects in terms of showing
+then add todo can select project or add a new project
+*/
