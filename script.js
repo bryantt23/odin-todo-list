@@ -23,7 +23,7 @@ class Project {
     this.todos.push(todo);
   };
   deleteTodo = pos => {
-    this.todos = this.todos.splice(pos, 1);
+    this.todos.splice(pos, 1);
   };
   editTodo = (currentTodo, updatedTodo) => {
     const pos = this.todos.indexOf(currentTodo);
@@ -77,16 +77,34 @@ console.log('🚀 ~ file: script.js:61 ~ toDoList:', toDoList);
 const todosDiv = document.querySelector('.todos');
 const ul = document.querySelector('ul');
 const displayTodos = () => {
+  ul.innerHTML = '';
   const todos = defaultProject.getTodos();
-  for (const todo of todos) {
+  const length = todos.length;
+  for (let i = 0; i < length; i++) {
+    const todo = todos[i];
     const li = document.createElement('li');
     li.textContent = todo.title;
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = todo.isCompleted;
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'delete-btn';
+    deleteButton.addEventListener('click', () => {
+      defaultProject.deleteTodo(i);
+      displayTodos();
+    });
     li.appendChild(checkbox);
+    li.appendChild(deleteButton);
     ul.appendChild(li);
   }
 };
+
+// ul.addEventListener('click', e => {
+//   if (e.target.classList.contains('delete-btn')) {
+//     console.log(e);
+//     defaultProject.deleteTodo(this);
+//   }
+// });
 
 displayTodos();
