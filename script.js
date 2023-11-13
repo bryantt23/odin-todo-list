@@ -33,16 +33,16 @@ class Project {
     return this.todos[pos];
   };
   toggleTodoIsComplete = todo => {
-    todo.isComplete = !todo.isComplete;
+    todo.isCompleted = !todo.isCompleted;
   };
 }
 
 class Todo {
-  constructor(title, description, dueDate, isComplete) {
+  constructor(title, description, dueDate, isCompleted) {
     this.title = title;
     this.description = description;
     this.dueDate = dueDate;
-    this.isCompleted = isComplete;
+    this.isCompleted = isCompleted;
   }
 }
 
@@ -79,6 +79,7 @@ const ul = document.querySelector('ul');
 const displayTodos = () => {
   ul.innerHTML = '';
   const todos = defaultProject.getTodos();
+  console.log('🚀 ~ file: script.js:82 ~ displayTodos ~ todos:', todos);
   const length = todos.length;
   for (let i = 0; i < length; i++) {
     const todo = todos[i];
@@ -87,6 +88,9 @@ const displayTodos = () => {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = todo.isCompleted;
+    checkbox.addEventListener('click', () =>
+      defaultProject.toggleTodoIsComplete(todo)
+    );
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'delete-btn';
