@@ -26,9 +26,8 @@ class Project {
   deleteTodo = pos => {
     this.todos.splice(pos, 1);
   };
-  editTodo = (currentTodo, updatedTodo) => {
-    const pos = this.todos.indexOf(currentTodo);
-    this.todos[pos] = updatedTodo;
+  editTodo = (index, updatedTodo) => {
+    this.todos[index] = updatedTodo;
   };
   getTodo = pos => {
     return this.todos[pos];
@@ -68,6 +67,7 @@ const addTodoBtn = document.querySelector('.add-todo');
 const form = document.querySelector('form');
 const formHeader = document.querySelector('.form-header');
 const cancelBtn = document.querySelector('.cancel-btn');
+let todoPos;
 
 const displayTodos = () => {
   ul.innerHTML = '';
@@ -88,7 +88,8 @@ const displayTodos = () => {
     editButton.textContent = 'Edit';
     editButton.className = 'edit-btn';
     editButton.addEventListener('click', () => {
-      editTodoFromDom(i, todo);
+      todoPos = i;
+      editTodoFromDom(todo);
     });
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
@@ -114,7 +115,16 @@ form.addEventListener('submit', e => {
   const dueDate = formData.get('dueDate');
   const isCompleted = formData.has('isCompleted');
 
-  defaultProject.addTodo(title, description, dueDate, isCompleted);
+  if (formHeader.textContent === 'Add Todo') {
+    defaultProject.addTodo(title, description, dueDate, isCompleted);
+  } else {
+    defaultProject.editTodo(todoPos, {
+      title,
+      description,
+      dueDate,
+      isCompleted
+    });
+  }
 
   hideAddTodoForm();
   displayTodos();
@@ -138,8 +148,7 @@ function hideAddTodoForm() {
   addTodoBtn.style.display = 'block';
 }
 
-function editTodoFromDom(pos, todo) {
-  console.log('🚀 ~ file: script.js:132 ~ editTodoFromDom ~ todo:', todo);
+function editTodoFromDom(todo) {
   showAddTodoForm();
   const { title, description, dueDate, isCompleted } = todo;
   document.querySelector('#title').value = title;
