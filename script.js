@@ -66,6 +66,8 @@ const todosDiv = document.querySelector('.todos');
 const ul = document.querySelector('ul');
 const addTodoBtn = document.querySelector('.add-todo');
 const form = document.querySelector('form');
+const formHeader = document.querySelector('.form-header');
+const cancelBtn = document.querySelector('.cancel-btn');
 
 const displayTodos = () => {
   ul.innerHTML = '';
@@ -118,14 +120,22 @@ form.addEventListener('submit', e => {
   displayTodos();
 });
 
+cancelBtn.addEventListener('click', e => {
+  e.preventDefault();
+  hideAddTodoForm();
+});
+
 function showAddTodoForm() {
   form.style.visibility = 'visible';
   todosDiv.style.display = 'none';
+  formHeader.textContent = 'Add Todo';
+  addTodoBtn.style.display = 'none';
 }
 
 function hideAddTodoForm() {
   form.style.visibility = 'hidden';
   todosDiv.style.display = 'block';
+  addTodoBtn.style.display = 'block';
 }
 
 function editTodoFromDom(pos, todo) {
@@ -136,6 +146,7 @@ function editTodoFromDom(pos, todo) {
   document.querySelector('#description').value = description;
   document.querySelector('#dueDate').value = dueDate;
   document.querySelector('#isCompleted').checked = isCompleted;
+  formHeader.textContent = 'Edit Todo';
 }
 
 // ul.addEventListener('click', e => {
