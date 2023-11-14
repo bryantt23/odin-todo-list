@@ -67,6 +67,11 @@ const addTodoBtn = document.querySelector('.add-todo');
 const form = document.querySelector('form');
 const formHeader = document.querySelector('.form-header');
 const cancelBtn = document.querySelector('.cancel-btn');
+const titleInput = document.querySelector('#title');
+const descriptionInput = document.querySelector('#description');
+const dueDateInput = document.querySelector('#dueDate');
+const isCompletedInput = document.querySelector('#isCompleted');
+
 let todoPos;
 
 const displayTodos = () => {
@@ -140,6 +145,10 @@ function showAddTodoForm() {
   todosDiv.style.display = 'none';
   formHeader.textContent = 'Add Todo';
   addTodoBtn.style.display = 'none';
+  titleInput.value = 'title';
+  descriptionInput.value = 'desc';
+  dueDateInput.value = '2023-11-12';
+  isCompletedInput.checked = true;
 }
 
 function hideAddTodoForm() {
@@ -151,10 +160,10 @@ function hideAddTodoForm() {
 function editTodoFromDom(todo) {
   showAddTodoForm();
   const { title, description, dueDate, isCompleted } = todo;
-  document.querySelector('#title').value = title;
-  document.querySelector('#description').value = description;
-  document.querySelector('#dueDate').value = dueDate;
-  document.querySelector('#isCompleted').checked = isCompleted;
+  titleInput.value = title;
+  descriptionInput.value = description;
+  dueDateInput.value = dueDate;
+  isCompletedInput.checked = isCompleted;
   formHeader.textContent = 'Edit Todo';
 }
 
