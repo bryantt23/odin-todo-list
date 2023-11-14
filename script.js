@@ -82,6 +82,12 @@ const displayTodos = () => {
     checkbox.addEventListener('click', () =>
       defaultProject.toggleTodoIsComplete(todo)
     );
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.className = 'edit-btn';
+    editButton.addEventListener('click', () => {
+      editTodoFromDom(i, todo);
+    });
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'delete-btn';
@@ -90,6 +96,7 @@ const displayTodos = () => {
       displayTodos();
     });
     li.appendChild(checkbox);
+    li.appendChild(editButton);
     li.appendChild(deleteButton);
     ul.appendChild(li);
   }
@@ -121,6 +128,16 @@ function hideAddTodoForm() {
   todosDiv.style.display = 'block';
 }
 
+function editTodoFromDom(pos, todo) {
+  console.log('🚀 ~ file: script.js:132 ~ editTodoFromDom ~ todo:', todo);
+  showAddTodoForm();
+  const { title, description, dueDate, isCompleted } = todo;
+  document.querySelector('#title').value = title;
+  document.querySelector('#description').value = description;
+  document.querySelector('#dueDate').value = dueDate;
+  document.querySelector('#isCompleted').checked = isCompleted;
+}
+
 // ul.addEventListener('click', e => {
 //   if (e.target.classList.contains('delete-btn')) {
 //     console.log(e);
@@ -134,7 +151,8 @@ displayTodos();
 first show todos x
 have ability to toggle x
 then delete x
-then create, edit, see details (using the form)
+then create x
+edit
 
 then switch projects in terms of showing
 then add todo can select project or add a new project
