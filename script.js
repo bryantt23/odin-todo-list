@@ -1,6 +1,6 @@
 class ToDoList {
   constructor() {
-    this.projects = { Default: new Project('Default') };
+    this.projects = {};
   }
   getProjectByName = name => {
     return this.projects[name];
@@ -46,8 +46,11 @@ class Todo {
   }
 }
 
+const CATEGORIES = { physical: 'Physical', mental: 'Mental', social: 'Social' };
+
 const toDoList = new ToDoList();
-const defaultProject = toDoList.getProjectByName('Default');
+Object.values(CATEGORIES).forEach(category => toDoList.addProject(category));
+const defaultProject = toDoList.getProjectByName(CATEGORIES.physical);
 defaultProject.addTodo(
   'Get sleep',
   'Lie in bed and count my breaths',
@@ -181,8 +184,12 @@ first show todos x
 have ability to toggle x
 then delete x
 then create x
-edit
+edit x
 
-then switch projects in terms of showing
-then add todo can select project or add a new project
+show projects
+show all projects, make all the default
+can switch projects
+add project to to do
+
+then add todo can select project on add or edit
 */
