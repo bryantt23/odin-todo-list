@@ -70,12 +70,12 @@ const form = document.querySelector('form');
 const displayTodos = () => {
   ul.innerHTML = '';
   const todos = defaultProject.getTodos();
-  console.log('🚀 ~ file: script.js:82 ~ displayTodos ~ todos:', todos);
   const length = todos.length;
   for (let i = 0; i < length; i++) {
     const todo = todos[i];
+    const { title, description, dueDate } = todo;
     const li = document.createElement('li');
-    li.textContent = todo.title;
+    li.textContent = `Title: ${title}, Description: ${description}, Due Date: ${dueDate}`;
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = todo.isCompleted;
