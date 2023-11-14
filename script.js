@@ -47,22 +47,33 @@ class Todo {
 }
 
 const CATEGORIES = { physical: 'Physical', mental: 'Mental', social: 'Social' };
+let currentProject = CATEGORIES.physical; // Use the key directly
 
 const toDoList = new ToDoList();
 Object.values(CATEGORIES).forEach(category => toDoList.addProject(category));
-const defaultProject = toDoList.getProjectByName(CATEGORIES.physical);
-defaultProject.addTodo(
+const physicalProject = toDoList.getProjectByName(CATEGORIES.physical);
+physicalProject.addTodo(
   'Get sleep',
   'Lie in bed and count my breaths',
   '2023-11-12',
   false
 );
-defaultProject.addTodo(
+physicalProject.addTodo(
   'Stretch',
   'Lengthen my arms, neck, shoulders, forearms, chest, lats',
   '2023-11-30',
   true
 );
+const mentalProject = toDoList.getProjectByName(CATEGORIES.mental);
+mentalProject.addTodo('Read', 'Lots of books', '2024-12-12', false);
+const socialProject = toDoList.getProjectByName(CATEGORIES.social);
+socialProject.addTodo(
+  'Make friends',
+  'And influence people',
+  '2023-12-12',
+  false
+);
+console.log('🚀 ~ file: script.js:53 ~ toDoList:', toDoList);
 
 const todosDiv = document.querySelector('.todos');
 const ul = document.querySelector('ul');
@@ -74,12 +85,13 @@ const titleInput = document.querySelector('#title');
 const descriptionInput = document.querySelector('#description');
 const dueDateInput = document.querySelector('#dueDate');
 const isCompletedInput = document.querySelector('#isCompleted');
-
+const dropdownContainer = document.querySelector('.dropdown-container');
 let todoPos;
 
 const displayTodos = () => {
   ul.innerHTML = '';
-  const todos = defaultProject.getTodos();
+  const project = toDoList.getProjectByName(currentProject);
+  const todos = project.getTodos();
   const length = todos.length;
   for (let i = 0; i < length; i++) {
     const todo = todos[i];
@@ -90,7 +102,7 @@ const displayTodos = () => {
     checkbox.type = 'checkbox';
     checkbox.checked = todo.isCompleted;
     checkbox.addEventListener('click', () =>
-      defaultProject.toggleTodoIsComplete(todo)
+      project.toggleTodoIsComplete(todo)
     );
     const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
@@ -103,7 +115,7 @@ const displayTodos = () => {
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'delete-btn';
     deleteButton.addEventListener('click', () => {
-      defaultProject.deleteTodo(i);
+      project.deleteTodo(i);
       displayTodos();
     });
     li.appendChild(checkbox);
@@ -122,11 +134,12 @@ form.addEventListener('submit', e => {
   const description = formData.get('description');
   const dueDate = formData.get('dueDate');
   const isCompleted = formData.has('isCompleted');
+  const currentProjectTodos = toDoList.getProjectByName(currentProject);
 
   if (formHeader.textContent === 'Add Todo') {
-    defaultProject.addTodo(title, description, dueDate, isCompleted);
+    currentProjectTodos.addTodo(title, description, dueDate, isCompleted);
   } else {
-    defaultProject.editTodo(todoPos, {
+    currentProjectTodos.editTodo(todoPos, {
       title,
       description,
       dueDate,
@@ -173,7 +186,7 @@ function editTodoFromDom(todo) {
 // ul.addEventListener('click', e => {
 //   if (e.target.classList.contains('delete-btn')) {
 //     console.log(e);
-//     defaultProject.deleteTodo(this);
+//     physicalProject.deleteTodo(this);
 //   }
 // });
 
@@ -187,9 +200,31 @@ then create x
 edit x
 
 show projects
-show all projects, make all the default
 can switch projects
+show all projects, make all the default
+get rid of the physicalProject variable
+
 add project to to do
 
 then add todo can select project on add or edit
 */
+
+function createDropDown() {
+  const dropdown = document.createElement('select');
+  for (const [key, value] of Object.entries(CATEGORIES)) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.text = value;
+    dropdown.appendChild(option);
+  }
+  dropdownContainer.appendChild(dropdown);
+}
+
+// Call the function to create the dropdown
+createDropDown();
+
+dropdownContainer.addEventListener('change', e => {
+  console.log(e.target.value);
+  currentProject = e.target.value;
+  displayTodos();
+});
