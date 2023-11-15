@@ -20,7 +20,13 @@ class Project {
     return this.todos;
   };
   addTodo = (title, description, dueDate, isCompleted) => {
-    const newTodo = new Todo(title, description, dueDate, isCompleted);
+    const newTodo = new Todo(
+      title,
+      description,
+      dueDate,
+      isCompleted,
+      this.projectName
+    );
     this.todos.push(newTodo);
   };
   deleteTodo = pos => {
@@ -38,11 +44,12 @@ class Project {
 }
 
 class Todo {
-  constructor(title, description, dueDate, isCompleted) {
+  constructor(title, description, dueDate, isCompleted, projectName) {
     this.title = title;
     this.description = description;
     this.dueDate = dueDate;
     this.isCompleted = isCompleted;
+    this.projectName = projectName;
   }
 }
 
@@ -95,9 +102,9 @@ const displayTodos = () => {
   const length = todos.length;
   for (let i = 0; i < length; i++) {
     const todo = todos[i];
-    const { title, description, dueDate } = todo;
+    const { title, description, dueDate, projectName } = todo;
     const li = document.createElement('li');
-    li.textContent = `Title: ${title}, Description: ${description}, Due Date: ${dueDate}`;
+    li.textContent = `Project: ${projectName}, Title: ${title}, Description: ${description}, Due Date: ${dueDate}`;
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = todo.isCompleted;
@@ -199,8 +206,9 @@ then delete x
 then create x
 edit x
 
-show projects
-can switch projects
+show projects x
+can switch projects x
+add project to todo in ui
 show all projects, make all the default
 get rid of the physicalProject variable
 
