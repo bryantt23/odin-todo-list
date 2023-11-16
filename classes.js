@@ -1,48 +1,27 @@
 class ToDoList {
   constructor() {
-    this.projects = {};
-  }
-  getProjectByName = name => {
-    return this.projects[name];
-  };
-  addProject = projectName => {
-    this.projects[projectName] = new Project(projectName);
-  };
-  getTodos = projectName => {
-    if (projectName === CATEGORIES.all) {
-      const todos = [];
-      for (const key in this.projects) {
-        const val = this.projects[key];
-        if (key === CATEGORIES.all) {
-          continue;
-        }
-        todos.push(...val.getTodos());
-      }
-      return todos;
-    }
-    return this.projects[projectName].getTodos();
-  };
-}
-
-class Project {
-  constructor(projectName) {
-    this.projectName = projectName;
     this.todos = [];
-    this.name = projectName;
   }
-  getTodos = () => {
-    return this.todos;
-  };
-  addTodo = (title, description, dueDate, isCompleted) => {
+
+  addTodo = (title, description, dueDate, isCompleted, projectName) => {
     const newTodo = new Todo(
       title,
       description,
       dueDate,
       isCompleted,
-      this.projectName
+      projectName
     );
     this.todos.push(newTodo);
   };
+
+  getTodos = projectName => {
+    if (projectName === CATEGORIES.all) {
+      return this.todos;
+    } else {
+      return this.todos.filter(todo => todo.projectName === projectName);
+    }
+  };
+
   deleteTodo = todoId => {
     const index = this.todos.findIndex(todo => todo.id === todoId);
     if (index !== -1) this.todos.splice(index, 1);
@@ -50,13 +29,16 @@ class Project {
 
   editTodo = (todoId, updatedTodo) => {
     const index = this.todos.findIndex(todo => todo.id === todoId);
-    if (index !== -1) this.todos[index] = updatedTodo;
+    if (index !== -1) {
+      this.todos[index] = updatedTodo;
+    }
   };
-  getTodo = pos => {
-    return this.todos[pos];
-  };
-  toggleTodoIsComplete = todo => {
-    todo.isCompleted = !todo.isCompleted;
+
+  toggleTodoIsComplete = todoId => {
+    const todo = this.todos.find(todo => todo.id === todoId);
+    if (todo) {
+      todo.isCompleted = !todo.isCompleted;
+    }
   };
 }
 

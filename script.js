@@ -12,7 +12,6 @@ let editTodoId;
 let todoPos;
 
 const toDoList = new ToDoList();
-Object.values(CATEGORIES).forEach(category => toDoList.addProject(category));
 
 // DOM Element References
 const todosDiv = document.querySelector('.todos');
@@ -25,23 +24,27 @@ const titleInput = document.querySelector('#title');
 const descriptionInput = document.querySelector('#description');
 const dueDateInput = document.querySelector('#dueDate');
 const isCompletedInput = document.querySelector('#isCompleted');
-const dropdownContainer = document.querySelector('.dropdown-container');
+const dropdownContainerViewTodos = document.querySelector(
+  '.dropdown-container-view-todos'
+);
+const dropdownContainerAddTodo = document.querySelector(
+  '.dropdown-container-add-todo'
+);
 
 // Display Todos Function
 const displayTodos = () => {
   ul.innerHTML = '';
   const todos = toDoList.getTodos(currentProject);
-  for (let i = 0; i < todos.length; i++) {
-    const todo = todos[i];
+  for (const element of todos) {
+    const todo = element;
     const { title, description, dueDate, projectName } = todo;
-    const project = toDoList.getProjectByName(projectName);
     const li = document.createElement('li');
     li.textContent = `Project: ${projectName}, Title: ${title}, Description: ${description}, Due Date: ${dueDate}`;
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = todo.isCompleted;
     checkbox.addEventListener('click', () =>
-      project.toggleTodoIsComplete(todo)
+      toDoList.toggleTodoIsComplete(todo.id)
     );
     const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
@@ -53,7 +56,7 @@ const displayTodos = () => {
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'delete-btn';
     deleteButton.addEventListener('click', () => {
-      project.deleteTodo(todo.id);
+      toDoList.deleteTodo(todo.id);
       displayTodos();
     });
     li.appendChild(checkbox);
@@ -73,21 +76,23 @@ form.addEventListener('submit', e => {
   const description = formData.get('description');
   const dueDate = formData.get('dueDate');
   const isCompleted = formData.has('isCompleted');
+  const projectDropdown = document.querySelector(
+    '.dropdown-container-add-todo select'
+  );
+  let projectName = projectDropdown.value;
 
   if (formHeader.textContent === 'Add Todo') {
-    const currentProjectTodos = toDoList.getProjectByName(currentProject);
-    currentProjectTodos.addTodo(title, description, dueDate, isCompleted);
+    toDoList.addTodo(title, description, dueDate, isCompleted, projectName);
   } else {
-    const editProject = toDoList.getProjectByName(editTodoProjectName);
     const updatedTodo = new Todo(
       title,
       description,
       dueDate,
       isCompleted,
-      editTodoProjectName
+      projectName
     );
     updatedTodo.id = editTodoId;
-    editProject.editTodo(editTodoId, updatedTodo);
+    toDoList.editTodo(editTodoId, updatedTodo);
   }
 
   hideAddTodoForm();
@@ -109,12 +114,14 @@ function showAddTodoForm() {
   descriptionInput.value = '';
   dueDateInput.value = '';
   isCompletedInput.checked = false;
+  dropdownContainerViewTodos.style.display = 'none';
 }
 
 function hideAddTodoForm() {
   form.style.visibility = 'hidden';
   todosDiv.style.display = 'block';
   addTodoBtn.style.display = 'block';
+  dropdownContainerViewTodos.style.display = 'block';
 }
 
 function editTodoFromDom(todo) {
@@ -127,55 +134,75 @@ function editTodoFromDom(todo) {
   formHeader.textContent = 'Edit Todo';
   editTodoId = todo.id;
   editTodoProjectName = projectName;
+
+  const projectDropdown = document.querySelector(
+    '.dropdown-container-add-todo select'
+  );
+  if (projectDropdown) {
+    projectDropdown.value = projectName;
+  }
 }
 
 // Dropdown Initialization and Event
-function createDropDown() {
+function createDropDown(domElement, options) {
   const dropdown = document.createElement('select');
-  for (const [key, value] of Object.entries(CATEGORIES)) {
+  for (const value of options) {
     const option = document.createElement('option');
     option.value = value;
     option.text = value;
     dropdown.appendChild(option);
   }
   dropdown.value = CATEGORIES.all;
-  dropdownContainer.appendChild(dropdown);
+  domElement.appendChild(dropdown);
 }
 
-createDropDown();
-
-dropdownContainer.addEventListener('change', e => {
+dropdownContainerViewTodos.addEventListener('change', e => {
   currentProject = e.target.value;
   displayTodos();
 });
 
 const initialize = () => {
   // Adding initial todos
-  const physicalProject = toDoList.getProjectByName(CATEGORIES.physical);
-  physicalProject.addTodo(
+  toDoList.addTodo(
     'Get sleep',
     'Lie in bed and count my breaths',
     '2023-11-12',
-    false
+    false,
+    CATEGORIES.physical
   );
-  physicalProject.addTodo(
+  toDoList.addTodo(
     'Stretch',
     'Lengthen my arms, neck, shoulders, forearms, chest, lats',
     '2023-11-30',
-    true
+    true,
+    CATEGORIES.physical
   );
-  const mentalProject = toDoList.getProjectByName(CATEGORIES.mental);
-  mentalProject.addTodo('Read', 'Lots of books', '2024-12-12', false);
-  const socialProject = toDoList.getProjectByName(CATEGORIES.social);
-  socialProject.addTodo(
+  toDoList.addTodo(
+    'Read',
+    'Lots of books',
+    '2024-12-12',
+    false,
+    CATEGORIES.mental
+  );
+  toDoList.addTodo(
     'Make friends',
     'And influence people',
     '2023-12-12',
-    false
+    false,
+    CATEGORIES.social
   );
+
+  // view to dos dropdown
+  createDropDown(dropdownContainerViewTodos, Object.values(CATEGORIES));
+  // add to do dropdown
+  const values = Object.values(CATEGORIES).filter(
+    elem => elem !== CATEGORIES.all
+  );
+  createDropDown(dropdownContainerAddTodo, values);
 
   // Initial Display Call
   displayTodos();
+  // showAddTodoForm();
 };
 
 initialize();
