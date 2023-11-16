@@ -14,30 +14,6 @@ let todoPos;
 const toDoList = new ToDoList();
 Object.values(CATEGORIES).forEach(category => toDoList.addProject(category));
 
-// Adding initial todos
-const physicalProject = toDoList.getProjectByName(CATEGORIES.physical);
-physicalProject.addTodo(
-  'Get sleep',
-  'Lie in bed and count my breaths',
-  '2023-11-12',
-  false
-);
-physicalProject.addTodo(
-  'Stretch',
-  'Lengthen my arms, neck, shoulders, forearms, chest, lats',
-  '2023-11-30',
-  true
-);
-const mentalProject = toDoList.getProjectByName(CATEGORIES.mental);
-mentalProject.addTodo('Read', 'Lots of books', '2024-12-12', false);
-const socialProject = toDoList.getProjectByName(CATEGORIES.social);
-socialProject.addTodo(
-  'Make friends',
-  'And influence people',
-  '2023-12-12',
-  false
-);
-
 // DOM Element References
 const todosDiv = document.querySelector('.todos');
 const ul = document.querySelector('ul');
@@ -173,5 +149,33 @@ dropdownContainer.addEventListener('change', e => {
   displayTodos();
 });
 
-// Initial Display Call
-displayTodos();
+const initialize = () => {
+  // Adding initial todos
+  const physicalProject = toDoList.getProjectByName(CATEGORIES.physical);
+  physicalProject.addTodo(
+    'Get sleep',
+    'Lie in bed and count my breaths',
+    '2023-11-12',
+    false
+  );
+  physicalProject.addTodo(
+    'Stretch',
+    'Lengthen my arms, neck, shoulders, forearms, chest, lats',
+    '2023-11-30',
+    true
+  );
+  const mentalProject = toDoList.getProjectByName(CATEGORIES.mental);
+  mentalProject.addTodo('Read', 'Lots of books', '2024-12-12', false);
+  const socialProject = toDoList.getProjectByName(CATEGORIES.social);
+  socialProject.addTodo(
+    'Make friends',
+    'And influence people',
+    '2023-12-12',
+    false
+  );
+
+  // Initial Display Call
+  displayTodos();
+};
+
+initialize();
