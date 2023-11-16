@@ -1,87 +1,20 @@
-class ToDoList {
-  constructor() {
-    this.projects = {};
-  }
-  getProjectByName = name => {
-    return this.projects[name];
-  };
-  addProject = projectName => {
-    this.projects[projectName] = new Project(projectName);
-  };
-  getTodos = projectName => {
-    if (projectName === CATEGORIES.all) {
-      const todos = [];
-      for (const key in this.projects) {
-        const val = this.projects[key];
-        if (key === CATEGORIES.all) {
-          continue;
-        }
-        todos.push(...val.getTodos());
-      }
-      return todos;
-    }
-    return this.projects[projectName].getTodos();
-  };
-}
-
-class Project {
-  constructor(projectName) {
-    this.projectName = projectName;
-    this.todos = [];
-    this.name = projectName;
-  }
-  getTodos = () => {
-    return this.todos;
-  };
-  addTodo = (title, description, dueDate, isCompleted) => {
-    const newTodo = new Todo(
-      title,
-      description,
-      dueDate,
-      isCompleted,
-      this.projectName
-    );
-    this.todos.push(newTodo);
-  };
-  deleteTodo = todoId => {
-    const index = this.todos.findIndex(todo => todo.id === todoId);
-    if (index !== -1) this.todos.splice(index, 1);
-  };
-
-  editTodo = (todoId, updatedTodo) => {
-    const index = this.todos.findIndex(todo => todo.id === todoId);
-    if (index !== -1) this.todos[index] = updatedTodo;
-  };
-  getTodo = pos => {
-    return this.todos[pos];
-  };
-  toggleTodoIsComplete = todo => {
-    todo.isCompleted = !todo.isCompleted;
-  };
-}
-
-class Todo {
-  constructor(title, description, dueDate, isCompleted, projectName) {
-    this.id = Date.now();
-    this.title = title;
-    this.description = description;
-    this.dueDate = dueDate;
-    this.isCompleted = isCompleted;
-    this.projectName = projectName;
-  }
-}
-
+// Constants and Initializations
 const CATEGORIES = {
   all: 'All',
   physical: 'Physical',
   mental: 'Mental',
   social: 'Social'
 };
-let currentProject = CATEGORIES.all; // Use the key directly
+
+let currentProject = CATEGORIES.all;
 let editTodoProjectName;
+let editTodoId;
+let todoPos;
 
 const toDoList = new ToDoList();
 Object.values(CATEGORIES).forEach(category => toDoList.addProject(category));
+
+// Adding initial todos
 const physicalProject = toDoList.getProjectByName(CATEGORIES.physical);
 physicalProject.addTodo(
   'Get sleep',
@@ -105,6 +38,7 @@ socialProject.addTodo(
   false
 );
 
+// DOM Element References
 const todosDiv = document.querySelector('.todos');
 const ul = document.querySelector('ul');
 const addTodoBtn = document.querySelector('.add-todo');
@@ -116,14 +50,12 @@ const descriptionInput = document.querySelector('#description');
 const dueDateInput = document.querySelector('#dueDate');
 const isCompletedInput = document.querySelector('#isCompleted');
 const dropdownContainer = document.querySelector('.dropdown-container');
-let todoPos;
-let editTodoId;
 
+// Display Todos Function
 const displayTodos = () => {
   ul.innerHTML = '';
   const todos = toDoList.getTodos(currentProject);
-  const length = todos.length;
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < todos.length; i++) {
     const todo = todos[i];
     const { title, description, dueDate, projectName } = todo;
     const project = toDoList.getProjectByName(projectName);
@@ -155,6 +87,7 @@ const displayTodos = () => {
   }
 };
 
+// Event Listeners
 addTodoBtn.addEventListener('click', showAddTodoForm);
 
 form.addEventListener('submit', e => {
@@ -190,15 +123,16 @@ cancelBtn.addEventListener('click', e => {
   hideAddTodoForm();
 });
 
+// DOM Manipulation Functions
 function showAddTodoForm() {
   form.style.visibility = 'visible';
   todosDiv.style.display = 'none';
   formHeader.textContent = 'Add Todo';
   addTodoBtn.style.display = 'none';
-  titleInput.value = 'title';
-  descriptionInput.value = 'desc';
-  dueDateInput.value = '2023-11-12';
-  isCompletedInput.checked = true;
+  titleInput.value = '';
+  descriptionInput.value = '';
+  dueDateInput.value = '';
+  isCompletedInput.checked = false;
 }
 
 function hideAddTodoForm() {
@@ -219,32 +153,7 @@ function editTodoFromDom(todo) {
   editTodoProjectName = projectName;
 }
 
-// ul.addEventListener('click', e => {
-//   if (e.target.classList.contains('delete-btn')) {
-//     console.log(e);
-//     physicalProject.deleteTodo(this);
-//   }
-// });
-
-displayTodos();
-
-/*
-first show todos x
-have ability to toggle x
-then delete x
-then create x
-edit x
-
-show projects x
-can switch projects x
-add project to todo in ui x
-show all projects, make all the default
-get rid of the physicalProject variable
-
-add project to to do
-then add todo can select project on add or edit
-*/
-
+// Dropdown Initialization and Event
 function createDropDown() {
   const dropdown = document.createElement('select');
   for (const [key, value] of Object.entries(CATEGORIES)) {
@@ -257,11 +166,12 @@ function createDropDown() {
   dropdownContainer.appendChild(dropdown);
 }
 
-// Call the function to create the dropdown
 createDropDown();
 
 dropdownContainer.addEventListener('change', e => {
-  console.log(e.target.value);
   currentProject = e.target.value;
   displayTodos();
 });
+
+// Initial Display Call
+displayTodos();
