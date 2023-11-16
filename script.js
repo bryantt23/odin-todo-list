@@ -1,195 +1,208 @@
-class ToDoList {
-  constructor() {
-    this.projects = { Default: new Project('Default') };
-  }
-  getProjectByName = name => {
-    return this.projects[name];
-  };
-  addProject = projectName => {
-    this.projects[projectName] = new Project(projectName);
-  };
-}
+// Constants and Initializations
+const CATEGORIES = {
+  all: 'All',
+  physical: 'Physical',
+  mental: 'Mental',
+  social: 'Social'
+};
 
-class Project {
-  constructor(projectName) {
-    this.projectName = projectName;
-    this.todos = [];
-    this.name = projectName;
-  }
-  getTodos = () => {
-    return [];
-  };
-  addTodo = todo => {
-    this.todos.push(todo);
-  };
-  deleteTodo = pos => {
-    this.todos = this.todos.splice(pos, 1);
-  };
-  editTodo = (currentTodo, updatedTodo) => {
-    const pos = this.todos.indexOf(currentTodo);
-    this.todos[pos] = updatedTodo;
-  };
-  getTodo = pos => {
-    return this.todos[pos];
-  };
-  toggleTodoIsComplete = todo => {
-    todo.isComplete = !todo.isComplete;
-  };
-}
-
-class Todo {
-  constructor(title, description, dueDate, isUrgent, isComplete) {
-    this.title = title;
-    this.description = description;
-    this.dueDate = dueDate;
-    this.isUrgent = isUrgent;
-    this.isCompleted = isComplete;
-  }
-}
+let currentProject = CATEGORIES.all;
+let editTodoProjectName;
+let editTodoId;
+let todoPos;
 
 const toDoList = new ToDoList();
 
-function testDefaultProjectExists() {
-  const defaultProjectExists = !!toDoList.getProjectByName('Default');
-  console.log(
-    'Test defaultProjectExists:',
-    defaultProjectExists ? 'PASS' : 'FAIL'
+// DOM Element References
+const todosDiv = document.querySelector('.todos');
+const ul = document.querySelector('ul');
+const addTodoBtn = document.querySelector('.add-todo');
+const form = document.querySelector('form');
+const formHeader = document.querySelector('.form-header');
+const cancelBtn = document.querySelector('.cancel-btn');
+const titleInput = document.querySelector('#title');
+const descriptionInput = document.querySelector('#description');
+const dueDateInput = document.querySelector('#dueDate');
+const isCompletedInput = document.querySelector('#isCompleted');
+const dropdownContainerViewTodos = document.querySelector(
+  '.dropdown-container-view-todos'
+);
+const dropdownContainerAddTodo = document.querySelector(
+  '.dropdown-container-add-todo'
+);
+
+// Display Todos Function
+const displayTodos = () => {
+  ul.innerHTML = '';
+  const todos = toDoList.getTodos(currentProject);
+  for (const element of todos) {
+    const todo = element;
+    const { title, description, dueDate, projectName } = todo;
+    const li = document.createElement('li');
+    li.textContent = `Project: ${projectName}, Title: ${title}, Description: ${description}, Due Date: ${dueDate}`;
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = todo.isCompleted;
+    checkbox.addEventListener('click', () =>
+      toDoList.toggleTodoIsComplete(todo.id)
+    );
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit';
+    editButton.className = 'edit-btn';
+    editButton.addEventListener('click', () => {
+      editTodoFromDom(todo);
+    });
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'delete-btn';
+    deleteButton.addEventListener('click', () => {
+      toDoList.deleteTodo(todo.id);
+      displayTodos();
+    });
+    li.appendChild(checkbox);
+    li.appendChild(editButton);
+    li.appendChild(deleteButton);
+    ul.appendChild(li);
+  }
+};
+
+// Event Listeners
+addTodoBtn.addEventListener('click', showAddTodoForm);
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  const title = formData.get('title');
+  const description = formData.get('description');
+  const dueDate = formData.get('dueDate');
+  const isCompleted = formData.has('isCompleted');
+  const projectDropdown = document.querySelector(
+    '.dropdown-container-add-todo select'
   );
+  let projectName = projectDropdown.value;
+
+  if (formHeader.textContent === 'Add Todo') {
+    toDoList.addTodo(title, description, dueDate, isCompleted, projectName);
+  } else {
+    const updatedTodo = new Todo(
+      title,
+      description,
+      dueDate,
+      isCompleted,
+      projectName
+    );
+    updatedTodo.id = editTodoId;
+    toDoList.editTodo(editTodoId, updatedTodo);
+  }
+
+  hideAddTodoForm();
+  displayTodos();
+});
+
+cancelBtn.addEventListener('click', e => {
+  e.preventDefault();
+  hideAddTodoForm();
+});
+
+// DOM Manipulation Functions
+function showAddTodoForm() {
+  form.style.visibility = 'visible';
+  todosDiv.style.display = 'none';
+  formHeader.textContent = 'Add Todo';
+  addTodoBtn.style.display = 'none';
+  titleInput.value = '';
+  descriptionInput.value = '';
+  dueDateInput.value = '';
+  isCompletedInput.checked = false;
+  dropdownContainerViewTodos.style.display = 'none';
 }
 
-function testGetTodos() {
-  const defaultProject = toDoList.getProjectByName('Default');
-  const titles = defaultProject.getTodos();
-  console.log(
-    'Test getTodos:',
-    Array.isArray(titles) && titles.every(title => typeof title === 'string')
-      ? 'PASS'
-      : 'FAIL'
-  );
+function hideAddTodoForm() {
+  form.style.visibility = 'hidden';
+  todosDiv.style.display = 'block';
+  addTodoBtn.style.display = 'block';
+  dropdownContainerViewTodos.style.display = 'block';
 }
 
-function testAddTodo() {
-  const defaultProject = toDoList.getProjectByName('Default');
-  const initialCount = defaultProject.todos.length;
-  defaultProject.addTodo(
-    new Todo('New Todo', 'Description', '2023-11-08', true, false)
+function editTodoFromDom(todo) {
+  showAddTodoForm();
+  const { title, description, dueDate, isCompleted, projectName } = todo;
+  titleInput.value = title;
+  descriptionInput.value = description;
+  dueDateInput.value = dueDate;
+  isCompletedInput.checked = isCompleted;
+  formHeader.textContent = 'Edit Todo';
+  editTodoId = todo.id;
+  editTodoProjectName = projectName;
+
+  const projectDropdown = document.querySelector(
+    '.dropdown-container-add-todo select'
   );
-  const todoAddedToDefaultProject = defaultProject.todos.some(
-    todo => todo.title === 'New Todo'
-  );
-  console.log(
-    'Test addTodo:',
-    defaultProject.todos.length === initialCount + 1 &&
-      todoAddedToDefaultProject
-      ? 'PASS'
-      : 'FAIL'
-  );
+  if (projectDropdown) {
+    projectDropdown.value = projectName;
+  }
 }
 
-function testDeleteTodo() {
-  const defaultProject = toDoList.getProjectByName('Default');
-  const initialCount = defaultProject.todos.length;
-  defaultProject.addTodo(
-    new Todo('Temp Todo', 'Description', '2023-11-08', true, false)
-  );
-  const addedTodoIndex = defaultProject.todos.length - 1;
-  defaultProject.deleteTodo(addedTodoIndex);
-  console.log(
-    'Test deleteTodo:',
-    defaultProject.todos.length === initialCount ? 'PASS' : 'FAIL'
-  );
+// Dropdown Initialization and Event
+function createDropDown(domElement, options) {
+  const dropdown = document.createElement('select');
+  for (const value of options) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.text = value;
+    dropdown.appendChild(option);
+  }
+  dropdown.value = CATEGORIES.all;
+  domElement.appendChild(dropdown);
 }
 
-function testEditTodo() {
-  const defaultProject = toDoList.getProjectByName('Default');
-  defaultProject.addTodo(
-    new Todo('Edit Me', 'Initial Description', '2023-11-08', false, false)
-  );
-  const initialTodo = defaultProject.todos.find(
-    todo => todo.title === 'Edit Me'
-  );
-  defaultProject.editTodo(initialTodo, {
-    title: 'Edited Todo',
-    description: 'Updated Description'
-  });
-  const editedTodo = defaultProject.todos.find(
-    todo => todo.title === 'Edited Todo'
-  );
-  console.log(
-    'Test editTodo:',
-    editedTodo && editedTodo.description === 'Updated Description'
-      ? 'PASS'
-      : 'FAIL'
-  );
-}
+dropdownContainerViewTodos.addEventListener('change', e => {
+  currentProject = e.target.value;
+  displayTodos();
+});
 
-function testGetTodo() {
-  const defaultProject = toDoList.getProjectByName('Default');
-  const todo = defaultProject.getTodo(0);
-  console.log(
-    'Test getTodo:',
-    todo && todo.title && todo.description && todo.dueDate ? 'PASS' : 'FAIL'
+const initialize = () => {
+  // Adding initial todos
+  toDoList.addTodo(
+    'Get sleep',
+    'Lie in bed and count my breaths',
+    '2023-11-12',
+    false,
+    CATEGORIES.physical
   );
-}
+  toDoList.addTodo(
+    'Stretch',
+    'Lengthen my arms, neck, shoulders, forearms, chest, lats',
+    '2023-11-30',
+    true,
+    CATEGORIES.physical
+  );
+  toDoList.addTodo(
+    'Read',
+    'Lots of books',
+    '2024-12-12',
+    false,
+    CATEGORIES.mental
+  );
+  toDoList.addTodo(
+    'Make friends',
+    'And influence people',
+    '2023-12-12',
+    false,
+    CATEGORIES.social
+  );
 
-function testToggleTodoIsComplete() {
-  const defaultProject = toDoList.getProjectByName('Default');
-  defaultProject.addTodo(
-    new Todo('Complete Me', 'Some Description', '2023-11-08', true, false)
+  // view to dos dropdown
+  createDropDown(dropdownContainerViewTodos, Object.values(CATEGORIES));
+  // add to do dropdown
+  const values = Object.values(CATEGORIES).filter(
+    elem => elem !== CATEGORIES.all
   );
-  const todoToToggle = defaultProject.todos.find(
-    todo => todo.title === 'Complete Me'
-  );
-  const initialStatus = todoToToggle.isComplete;
-  defaultProject.toggleTodoIsComplete(todoToToggle);
-  const newStatus = todoToToggle.isComplete;
-  console.log(
-    'Test toggleTodoIsComplete:',
-    newStatus !== initialStatus ? 'PASS' : 'FAIL'
-  );
-}
+  createDropDown(dropdownContainerAddTodo, values);
 
-function testAddProject() {
-  const projectName = 'New Project';
-  toDoList.addProject(projectName);
-  const newProject = toDoList.getProjectByName(projectName);
-  console.log(
-    'Test addProject:',
-    newProject && newProject.name === projectName ? 'PASS' : 'FAIL'
-  );
-}
+  // Initial Display Call
+  displayTodos();
+  // showAddTodoForm();
+};
 
-function testAddTodoToProject() {
-  const projectName = 'New Project';
-  toDoList.addProject(projectName);
-  const newProject = toDoList.getProjectByName(projectName);
-  const initialTodoCount = newProject.todos.length;
-  newProject.addTodo(
-    new Todo('Todo for New Project', 'Description', '2023-11-08', false, false)
-  );
-  const newTodoCount = newProject.todos.length;
-  console.log(
-    'Test addTodoToProject:',
-    newTodoCount === initialTodoCount + 1 ? 'PASS' : 'FAIL'
-  );
-}
-
-function runTests() {
-  console.log('Running tests...');
-  testDefaultProjectExists();
-  testGetTodos();
-  testAddTodo();
-  testDeleteTodo();
-  testEditTodo();
-  testGetTodo();
-  testToggleTodoIsComplete();
-  testAddProject();
-  testAddTodoToProject();
-  console.log('Tests finished.');
-}
-
-// Replace 'toDoList' with your actual toDoList object that includes the todos and the methods to manipulate them.
-// Also, make sure that the Todo class and Project class are correctly implemented.
-
-// Run the tests by calling
-runTests();
+initialize();
